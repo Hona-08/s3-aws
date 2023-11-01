@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, ListObjectsV2Command  } = require('@aws-sdk/client-s3');
 const { v4: uuidv4 } = require('uuid');
 const dotenv = require('dotenv');
 
@@ -37,4 +37,21 @@ const uploadFiles = async (req, res) => {
   }
 };
 
-module.exports = { uploadFiles };
+const listFiles = async (req, res) => {
+  try {
+    const listParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Prefix: 'uploads/',
+    };
+
+    const data = await s3client.send(new ListObjectsV2Command(listParams));
+    const files = data.Contents.map((file) => file.Key);
+    return res.json({ files });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'An error occurred while displaying list' });
+  }
+};
+
+
+module.exports = { uploadFiles, listFiles };
