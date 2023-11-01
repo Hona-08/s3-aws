@@ -17,5 +17,6 @@ const upload = multer({
 });
 
 router.post('/upload', upload.array('file'), uploadController.uploadFiles);
+router.get('/list', uploadController.listFiles);
 
 module.exports = router;
